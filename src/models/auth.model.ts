@@ -4,11 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import db from '../services/database.service';
 
+import { User } from '../types/auth';
+
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-const getUser = (username: string) => {
+const getUser = (username: string): User | undefined => {
 	const statement = db.prepare('SELECT * FROM users WHERE username = ?');
-	const user = statement.get(username);
+	const user = statement.get(username) as User | undefined;
 	return user;
 };
 
@@ -22,7 +24,7 @@ const getToken = (userId: string): string => {
 	return token;
 };
 
-const generateHashedPassword = async (password: string) => {
+const generateHashedPassword = async (password: string): Promise<string> => {
 	const hashedPassword = await argon2.hash(password);
 	return hashedPassword;
 };
@@ -53,8 +55,7 @@ const createUser = async (username: string, password: string) => {
 };
 
 const logInUser = async (username: string, password: string) => {
-	const user = await getUser(username);
-	console.log(user);
+	const user: User | undefined = await getUser(username);
 	if (!user) {
 		console.error(`[authModel: logInUser] No user found.`);
 		throw new Error('Invalid credentials.');
