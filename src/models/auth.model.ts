@@ -1,8 +1,8 @@
-import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
 import db from '../services/database.service';
+import cryptoModel from './crypto.model';
 
 import { User } from '../types/auth';
 
@@ -24,23 +24,25 @@ const getToken = (userId: string): string => {
 	return token;
 };
 
-const generateHashedPassword = async (password: string): Promise<string> => {
-	const hashedPassword = await argon2.hash(password);
-	return hashedPassword;
-};
-
 const createUser = async (username: string, password: string) => {
 	try {
-		const hashedPassword = await generateHashedPassword(password);
+		const authSalt = cryptoModel.generateSalt();
+		const vaultSalt = cryptoModel.generateSalt();
+		const hashedPassword = await cryptoModel.generateHashedPassword(
+			password,
+			authSalt
+		);
 		console.log('[authModel: createUser] Storing user in database...');
 		const user = {
 			id: uuidv4(),
 			username,
 			hashedPassword,
+			authSalt,
+			vaultSalt,
 		};
 
 		const statement = db.prepare(
-			'INSERT INTO users (id, username, hashedPassword) VALUES (@id, @username, @hashedPassword)'
+			'INSERT INTO users (id, username, hashedPassword, authSalt, vaultSalt) VALUES (@id, @username, @hashedPassword, @authSalt, @vaultSalt)'
 		);
 		statement.run(user);
 		console.log('[authModel: createUser] User saved.');
@@ -61,7 +63,10 @@ const logInUser = async (username: string, password: string) => {
 		throw new Error('Invalid credentials.');
 	}
 
-	const isValid = await argon2.verify(user.hashedPassword, password);
+	const isValid = await cryptoModel.verifyPassword(
+		user.hashedPassword,
+		password
+	);
 	if (!isValid) {
 		console.error(`[authModel: logInUser] Invalid credentials provided.`);
 		throw new Error('Invalid credentials.');
