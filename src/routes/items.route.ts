@@ -16,4 +16,12 @@ router.post(
 	asyncHandler(itemsController.createItem)
 );
 
+router.get('/', authMiddleware, asyncHandler(itemsController.fetchItems));
+
+router.get(
+	'/:id',
+	[authMiddleware, celebrate(itemsSchema.getById)],
+	asyncHandler(itemsController.fetchItemById)
+);
+
 export default router;

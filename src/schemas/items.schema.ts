@@ -20,4 +20,10 @@ const create = {
 		.required(),
 };
 
-export default { create };
+const getById = {
+	params: Joi.object({
+		id: Joi.string().required(),
+	}),
+};
+
+export default { create, getById };

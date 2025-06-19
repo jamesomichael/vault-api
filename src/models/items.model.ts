@@ -34,4 +34,18 @@ const createItem = ({ blob, iv }: CreateItemDto, userId: string): ItemDto => {
 	return item;
 };
 
-export default { createItem };
+const fetchItems = (userId: string): ItemDto[] => {
+	const statement = db.prepare('SELECT * FROM items WHERE userId = @userId');
+	const items = statement.all({ userId }) as ItemDto[];
+	return items;
+};
+
+const fetchItemById = (id: string, userId: string): ItemDto => {
+	const statement = db.prepare(
+		'SELECT * FROM items WHERE id = @id AND userId = @userId'
+	);
+	const item = statement.get({ id, userId }) as ItemDto;
+	return item;
+};
+
+export default { createItem, fetchItems, fetchItemById };
