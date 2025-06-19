@@ -15,7 +15,14 @@ const register: RequestHandler = async (req, res): Promise<void> => {
 		}
 
 		const { user, token } = await authModel.createUser(username, password);
-		res.status(200).json({ token, user });
+		res.status(200)
+			.cookie('token', token, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 1000 * 60 * 60 * 1,
+			})
+			.json({ token, user });
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(`[authController: register] ${error.message}`);
@@ -31,7 +38,14 @@ const login: RequestHandler = async (req, res): Promise<void> => {
 			`[authController: login] Attempting to log in user ${username}...`
 		);
 		const { user, token } = await authModel.logInUser(username, password);
-		res.status(200).json({ token, user });
+		res.status(200)
+			.cookie('token', token, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 1000 * 60 * 60 * 1,
+			})
+			.json({ token, user });
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(`[authController: login] ${error.message}`);
