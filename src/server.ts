@@ -12,11 +12,13 @@ const PORT = process.env.PORT || 8080;
 
 import * as databaseService from './services/database.service';
 import authRoutes from './routes/auth.route';
+import itemsRoutes from './routes/items.route';
 
 const app = express();
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/items', itemsRoutes);
 
 app.use(errors());
 
