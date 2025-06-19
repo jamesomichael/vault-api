@@ -28,4 +28,4 @@ const login = {
 		.required(),
 };
 
-export { register, login };
+export default { register, login };

@@ -2,10 +2,7 @@ import express from 'express';
 import { celebrate } from 'celebrate';
 import asyncHandler from 'express-async-handler';
 
-import {
-	register as registerSchema,
-	login as loginSchema,
-} from '../schemas/auth.schema';
+import authSchema from '../schemas/auth.schema';
 
 import authController from '../controllers/auth.controller';
 
@@ -13,13 +10,13 @@ const router = express.Router();
 
 router.post(
 	'/register',
-	celebrate(registerSchema),
+	celebrate(authSchema.register),
 	asyncHandler(authController.register)
 );
 
 router.post(
 	'/login',
-	celebrate(loginSchema),
+	celebrate(authSchema.login),
 	asyncHandler(authController.login)
 );
 
