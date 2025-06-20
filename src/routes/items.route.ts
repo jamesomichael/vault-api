@@ -30,4 +30,10 @@ router.patch(
 	asyncHandler(itemsController.updateItem)
 );
 
+router.delete(
+	'/:id',
+	[authMiddleware, celebrate(itemsSchema.remove)],
+	asyncHandler(itemsController.deleteItem)
+);
+
 export default router;

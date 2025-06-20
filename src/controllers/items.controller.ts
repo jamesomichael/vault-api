@@ -70,4 +70,34 @@ const updateItem: RequestHandler = async (req, res): Promise<void> => {
 	}
 };
 
-export default { createItem, fetchItems, fetchItemById, updateItem };
+const deleteItem: RequestHandler = async (req, res): Promise<void> => {
+	const { id } = req.params;
+	const userId = (req as AuthorisedRequest).user.id;
+	try {
+		const item = itemsModel.fetchItemById(id, userId);
+		if (!item) {
+			res.status(404).json({ message: 'Item not found.' });
+			return;
+		}
+
+		if (item.deletedAt === null) {
+			itemsModel.softDeleteItem(id, userId);
+		} else {
+			itemsModel.deleteItem(id, userId);
+		}
+		res.status(204).send();
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[itemsController: fetchItemById] ${error.message}`);
+		}
+		res.status(500).json({ message: 'Something went wrong.' });
+	}
+};
+
+export default {
+	createItem,
+	fetchItems,
+	fetchItemById,
+	updateItem,
+	deleteItem,
+};

@@ -34,4 +34,10 @@ const update = {
 	}).required(),
 };
 
-export default { create, getById, update };
+const remove = {
+	params: Joi.object({
+		id: Joi.string().required(),
+	}),
+};
+
+export default { create, getById, update, remove };

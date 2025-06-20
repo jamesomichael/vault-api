@@ -77,4 +77,32 @@ const updateItem = (updates: UpdateItemDto, id: string, userId: string) => {
 	return true;
 };
 
-export default { createItem, fetchItems, fetchItemById, updateItem };
+const softDeleteItem = (id: string, userId: string) => {
+	const statement = db.prepare(
+		'UPDATE items SET deletedAt = @deletedAt WHERE id = @id AND userId = @userId'
+	);
+	statement.run({
+		id,
+		userId,
+		deletedAt: new Date().toISOString(),
+	});
+};
+
+const deleteItem = (id: string, userId: string) => {
+	const statement = db.prepare(
+		'DELETE FROM items WHERE id = @id AND userId = @userId'
+	);
+	statement.run({
+		id,
+		userId,
+	});
+};
+
+export default {
+	createItem,
+	fetchItems,
+	fetchItemById,
+	updateItem,
+	softDeleteItem,
+	deleteItem,
+};
