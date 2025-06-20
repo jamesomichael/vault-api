@@ -7,6 +7,10 @@ interface CreateItemDto {
 	iv: string;
 }
 
+interface UpdateItemDto {
+	blob?: string;
+	iv?: string;
+}
 interface ItemDto {
 	id: string;
 	userId: string;
@@ -48,4 +52,29 @@ const fetchItemById = (id: string, userId: string): ItemDto => {
 	return item;
 };
 
-export default { createItem, fetchItems, fetchItemById };
+const updateItem = (updates: UpdateItemDto, id: string, userId: string) => {
+	const keysToUpdate = Object.keys(updates);
+
+	if (keysToUpdate.length === 0) {
+		throw new Error('No updates provided.');
+	}
+
+	const query = `UPDATE items SET ${keysToUpdate
+		.map((key) => `${key} = @${key}`)
+		.join(
+			', '
+		)}, updatedAt = @updatedAt WHERE id = @id AND userId = @userId`;
+
+	const data = {
+		id,
+		userId,
+		...updates,
+		updatedAt: new Date().toISOString(),
+	};
+
+	const statement = db.prepare(query);
+	statement.run(data);
+	return true;
+};
+
+export default { createItem, fetchItems, fetchItemById, updateItem };

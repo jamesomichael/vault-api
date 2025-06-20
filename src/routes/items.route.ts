@@ -24,4 +24,10 @@ router.get(
 	asyncHandler(itemsController.fetchItemById)
 );
 
+router.patch(
+	'/:id',
+	[authMiddleware, celebrate(itemsSchema.update)],
+	asyncHandler(itemsController.updateItem)
+);
+
 export default router;

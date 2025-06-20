@@ -49,4 +49,25 @@ const fetchItemById: RequestHandler = async (req, res): Promise<void> => {
 	}
 };
 
-export default { createItem, fetchItems, fetchItemById };
+const updateItem: RequestHandler = async (req, res): Promise<void> => {
+	const { id } = req.params;
+	const updates = req.body;
+	const userId = (req as AuthorisedRequest).user.id;
+	try {
+		const item = itemsModel.fetchItemById(id, userId);
+		if (!item) {
+			res.status(404).json({ message: 'Item not found.' });
+			return;
+		}
+		itemsModel.updateItem(updates, id, userId);
+		const updatedItem = itemsModel.fetchItemById(id, userId);
+		res.status(200).json(updatedItem);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[itemsController: updateItem] ${error.message}`);
+		}
+		res.status(500).json({ message: 'Something went wrong.' });
+	}
+};
+
+export default { createItem, fetchItems, fetchItemById, updateItem };
