@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 
 import authModel from '../models/auth.model';
 
+import { AuthorisedRequest } from '../types/auth';
+
 const register: RequestHandler = async (req, res): Promise<void> => {
 	const { username, password } = req.body;
 	try {
@@ -58,7 +60,19 @@ const login: RequestHandler = async (req, res): Promise<void> => {
 	}
 };
 
+const logout: RequestHandler = async (req, res): Promise<void> => {
+	const userId = (req as AuthorisedRequest).user.id;
+	console.log(`[authController: logout] Logging out user ${userId}...`);
+	res.clearCookie('token', {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'strict',
+	});
+	res.status(204).send();
+};
+
 export default {
 	register,
 	login,
+	logout,
 };

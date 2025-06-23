@@ -6,6 +6,8 @@ import authSchema from '../schemas/auth.schema';
 
 import authController from '../controllers/auth.controller';
 
+import { auth as authMiddleware } from '../middleware';
+
 const router = express.Router();
 
 router.post(
@@ -19,5 +21,7 @@ router.post(
 	celebrate(authSchema.login),
 	asyncHandler(authController.login)
 );
+
+router.post('/logout', authMiddleware, asyncHandler(authController.logout));
 
 export default router;
