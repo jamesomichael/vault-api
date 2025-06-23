@@ -10,9 +10,7 @@ const auth: RequestHandler = async (
 	res: Response,
 	next: NextFunction
 ): Promise<void> => {
-	const token: string | undefined = req
-		.header('Authorization')
-		?.split('Bearer ')[1];
+	const token = req.cookies?.token;
 
 	if (!token) {
 		res.status(401).json({ message: 'An access token is required.' });
