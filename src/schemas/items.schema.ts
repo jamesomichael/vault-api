@@ -31,6 +31,7 @@ const update = {
 	body: Joi.object({
 		blob: Joi.string(),
 		iv: Joi.string().base64({ paddingRequired: false }).length(16),
+		deletedAt: Joi.any().valid(null),
 	}).required(),
 };
 
