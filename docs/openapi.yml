@@ -1,0 +1,431 @@
+openapi: 3.0.3
+info:
+    title: Vault API
+    description: Manage your secure items with Vault API. Zero-knowledge password management.
+    version: 1.0.0
+servers:
+    - url: http://localhost:8080
+tags:
+    - name: Auth
+      description: User authentication.
+    - name: Users
+      description: Manage local users.
+    - name: Items
+      description: Manager secure vault items.
+paths:
+    /api/auth/register:
+        post:
+            tags:
+                - Auth
+            summary: Create a new user account.
+            description: Create a new user account.
+            operationId: register
+            requestBody:
+                description: Register a new Vault user.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegisterUser'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AuthUserResponse'
+                '409':
+                    description: User already exists
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserAlreadyExistsResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+    /api/auth/login:
+        post:
+            tags:
+                - Auth
+            summary: Log in to a user account.
+            description: Log in to a user account.
+            operationId: login
+            requestBody:
+                description: Log in to an existing Vault account.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LogInUser'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AuthUserResponse'
+                '401':
+                    description: Invalid credentials
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InvalidCredentialsResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+    /api/users:
+        get:
+            tags:
+                - Users
+            summary: Fetch all local users.
+            description: Fetch all local users.
+            operationId: fetchLocalUsers
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UsersResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+    /api/items:
+        get:
+            security:
+                - CookieAuth: []
+            tags:
+                - Items
+            summary: Fetch all vault items.
+            description: Fetch all vault items for a user.
+            operationId: fetchItems
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemsResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        post:
+            security:
+                - CookieAuth: []
+            tags:
+                - Items
+            summary: Create a new item.
+            description: Add a new item.
+            operationId: createItem
+            requestBody:
+                description: Add a new item.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateItem'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+    /api/items/{itemId}:
+        parameters:
+            - name: itemId
+              in: path
+              required: true
+              description: The item ID.
+              schema:
+                  type: string
+        get:
+            security:
+                - CookieAuth: []
+            tags:
+                - Items
+            summary: Fetch a vault item.
+            description: Fetch an item by its ID.
+            operationId: fetchItemById
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Item not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        patch:
+            security:
+                - CookieAuth: []
+            tags:
+                - Items
+            summary: Update an item.
+            description: Update an existing item.
+            operationId: updateItem
+            requestBody:
+                description: Update an item.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateItem'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Item not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        delete:
+            security:
+                - CookieAuth: []
+            tags:
+                - Items
+            summary: Delete an item.
+            description: Delete an item. Initially a soft-delete, then a hard-delete.
+            operationId: deleteItem
+            responses:
+                '204':
+                    description: Successful operation
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Item not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ItemNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+components:
+    securitySchemes:
+        CookieAuth:
+            type: apiKey
+            in: cookie
+            name: token
+    schemas:
+        RegisterUser:
+            type: object
+            required:
+                - username
+                - password
+            properties:
+                username:
+                    type: string
+                    example: 'James'
+                password:
+                    type: string
+                    example: p455w0rd!
+                    minLength: 8
+                    maxLength: 32
+        LogInUser:
+            type: object
+            required:
+                - username
+                - password
+            properties:
+                username:
+                    type: string
+                    example: 'James'
+                password:
+                    type: string
+                    example: p455w0rd!
+        AuthUserResponse:
+            type: object
+            properties:
+                token:
+                    type: string
+                    example: 'example-auth-token-0123456789876543210'
+                user:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            example: '0123456789'
+                        username:
+                            type: string
+                            example: 'James'
+                        hashedPassword:
+                            type: string
+                            example: '$argon2id...example-hashed-password'
+                        authSalt:
+                            type: string
+                            example: 'example-auth-salt'
+                        vaultSalt:
+                            type: string
+                            example: 'example-vault-salt'
+                        createdAt:
+                            type: string
+                            example: '2025-01-01 00:00:00'
+        UsersResponse:
+            type: array
+            items:
+                type: object
+                properties:
+                    id:
+                        type: string
+                        example: 'example-user-id-1'
+                    username:
+                        type: string
+                        example: 'James'
+        UserAlreadyExistsResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'User already exists.'
+        CreateItem:
+            type: object
+            required:
+                - blob
+                - iv
+            properties:
+                blob:
+                    type: string
+                    example: 'example-blob'
+                iv:
+                    type: string
+                    pattern: '^[A-Za-z0-9+/]{16}$'
+                    example: 'I3vW6KS9oJunr6XK'
+        UpdateItem:
+            type: object
+            properties:
+                blob:
+                    type: string
+                    example: 'example-blob'
+                iv:
+                    type: string
+                    pattern: '^[A-Za-z0-9+/]{16}$'
+                    example: 'I3vW6KS9oJunr6XK'
+                deletedAt:
+                    type: string
+                    nullable: true
+                    example: null
+                    description: 'Must be null when restoring a soft-deleted item.'
+        ItemResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 'example-item-id-1'
+                userId:
+                    type: string
+                    example: 'example-user-id-1'
+                blob:
+                    type: string
+                    example: 'example-blob'
+                iv:
+                    type: string
+                    example: 'example-iv'
+                createdAt:
+                    type: string
+                    example: '2025-01-01 00:00:00'
+                updatedAt:
+                    type: string
+                    example: '2025-01-01 00:00:00'
+                deletedAt:
+                    type: string
+                    nullable: true
+                    example: null
+        ItemsResponse:
+            type: array
+            items:
+                $ref: '#/components/schemas/ItemResponse'
+        ItemNotFoundResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'Item not found.'
+        ServerErrorResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'Something went wrong.'
+        UnauthorisedResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'An access token is required.'
+        InvalidCredentialsResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'Invalid credentials.'
