@@ -11,7 +11,7 @@ tags:
     - name: Users
       description: Manage local users.
     - name: Items
-      description: Manager secure vault items.
+      description: Manage secure vault items.
 paths:
     /api/auth/register:
         post:
