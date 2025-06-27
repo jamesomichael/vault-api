@@ -20,7 +20,8 @@ npm install
 
 2. Rename the `.env.local` file to `.env`.
 3. Add your own JWT secret to `.env`.
-4. Run the server:
+4. Create an empty `db` directory at the root of the project.
+5. Run the server:
 
 ```bash
 npm run dev
