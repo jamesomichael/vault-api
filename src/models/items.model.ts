@@ -2,24 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import db from '../services/database.service';
 
-interface CreateItemDto {
-	blob: string;
-	iv: string;
-}
-
-interface UpdateItemDto {
-	blob?: string;
-	iv?: string;
-}
-interface ItemDto {
-	id: string;
-	userId: string;
-	blob: string;
-	iv: string;
-	createdAt: string;
-	updatedAt: string;
-	deletedAt?: string;
-}
+import type { CreateItemDto, UpdateItemDto, ItemDto } from '../types/items';
 
 const createItem = ({ blob, iv }: CreateItemDto, userId: string): ItemDto => {
 	const item = {
