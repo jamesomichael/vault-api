@@ -65,7 +65,6 @@ describe('users.model', () => {
 				authSalt,
 				vaultSalt
 			);
-			console.log(data);
 			expect(data).toEqual({
 				id: userId,
 				username,
