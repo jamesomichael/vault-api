@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 
 import authModel from '../models/auth.model';
+import usersModel from '../models/users.model';
 
 import { AuthorisedRequest } from '../types/auth';
 
@@ -10,13 +11,16 @@ const register: RequestHandler = async (req, res): Promise<void> => {
 		console.log(
 			`[authController: register] Attempting to register user ${username}...`
 		);
-		if (authModel.getUser(username)) {
+		if (usersModel.getUser(username)) {
 			console.log('[authController: register]: User already exists.');
 			res.status(409).json({ message: 'User already exists.' });
 			return;
 		}
 
-		const { user, token } = await authModel.createUser(username, password);
+		const { user, token } = await authModel.registerUser(
+			username,
+			password
+		);
 		res.status(200)
 			.cookie('token', token, {
 				httpOnly: true,

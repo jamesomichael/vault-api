@@ -1,18 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 
-import db from '../services/database.service';
+import usersModel from './users.model';
 import cryptoModel from './crypto.model';
 
-import { User } from '../types/auth';
+import type { UserDto } from '../types/users';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-
-const getUser = (username: string): User | undefined => {
-	const statement = db.prepare('SELECT * FROM users WHERE username = ?');
-	const user = statement.get(username) as User | undefined;
-	return user;
-};
 
 const getToken = (userId: string): string => {
 	const payload = {
@@ -24,7 +17,7 @@ const getToken = (userId: string): string => {
 	return token;
 };
 
-const createUser = async (username: string, password: string) => {
+const registerUser = async (username: string, password: string) => {
 	try {
 		const authSalt = cryptoModel.generateSalt();
 		const vaultSalt = cryptoModel.generateSalt();
@@ -33,18 +26,12 @@ const createUser = async (username: string, password: string) => {
 			authSalt
 		);
 		console.log('[authModel: createUser] Storing user in database...');
-		const user = {
-			id: uuidv4(),
+		const user = usersModel.createUser(
 			username,
 			hashedPassword,
 			authSalt,
-			vaultSalt,
-		};
-
-		const statement = db.prepare(
-			'INSERT INTO users (id, username, hashedPassword, authSalt, vaultSalt) VALUES (@id, @username, @hashedPassword, @authSalt, @vaultSalt)'
+			vaultSalt
 		);
-		statement.run(user);
 		console.log('[authModel: createUser] User saved.');
 		const token = getToken(user.id);
 		return { token, user };
@@ -57,7 +44,7 @@ const createUser = async (username: string, password: string) => {
 };
 
 const logInUser = async (username: string, password: string) => {
-	const user: User | undefined = await getUser(username);
+	const user: UserDto | undefined = await usersModel.getUser(username);
 	if (!user) {
 		console.error(`[authModel: logInUser] No user found.`);
 		throw new Error('Invalid credentials.');
@@ -76,4 +63,4 @@ const logInUser = async (username: string, password: string) => {
 	return { token, user };
 };
 
-export default { getUser, createUser, logInUser };
+export default { registerUser, logInUser };
