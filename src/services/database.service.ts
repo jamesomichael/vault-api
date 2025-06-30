@@ -1,7 +1,6 @@
 import Database from 'better-sqlite3';
 
 const db = new Database('./db/vault.db');
-// db.pragma('journal_mode = WAL');
 
 const serialise = () => {
 	db.exec(`\
@@ -14,23 +13,6 @@ const serialise = () => {
 			createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\
 		);\
 	`);
-
-	// db.exec(`\
-	// 	CREATE TABLE IF NOT EXISTS items (\
-	// 		id TEXT PRIMARY KEY,\
-	// 		userId TEXT NOT NULL,\
-	// 		type TEXT NOT NULL,\
-	// 		name TEXT NOT NULL,\
-	// 		username TEXT NOT NULL,\
-	// 		password TEXT NOT NULL,\
-	// 		uri TEXT NOT NULL,\
-	// 		folderId TEXT,\
-	// 		isFavourite INTEGER NOT NULL,\
-	// 		createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,\
-	// 		updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,\
-	// 		deletedAt TEXT\
-	// 	);\
-	// `);
 
 	db.exec(`\
 		CREATE TABLE IF NOT EXISTS items (\
