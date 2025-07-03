@@ -1,5 +1,8 @@
 ![Vault API](https://mexhjsdibsoshbepazwt.supabase.co/storage/v1/object/public/portfolio25//vault-api.png)
 
+![Coverage](https://img.shields.io/codecov/c/github/jamesomichael/vault-api)
+[![Docs](https://img.shields.io/badge/docs-openapi-blue.svg)](https://jamesomichael.github.io/vault-api/)
+
 A RESTful API to handle authentication and item management for _[Vault](https://github.com/jamesomichael/vault)_.
 
 ## **Local Development**
