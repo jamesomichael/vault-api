@@ -80,7 +80,7 @@ const deleteItem: RequestHandler = async (req, res): Promise<void> => {
 			return;
 		}
 
-		if (item.deletedAt === null) {
+		if (!item.deletedAt || item.deletedAt === null) {
 			itemsModel.softDeleteItem(id, userId);
 		} else {
 			itemsModel.deleteItem(id, userId);
